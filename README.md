@@ -1,3 +1,2 @@
-# Pando2_test
-
-This is a test repository for Pando2.
+Suivre ce tuto :
+https://guides.rubyonrails.org/install_ruby_on_rails.html#install-ruby-on-windows
