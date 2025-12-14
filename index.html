@@ -3,11 +3,53 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>PANDO2 - Dashboard</title>
+		<link rel="stylesheet" href="styles.css" />
 		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	</head>
 	<body>
-		<div id="content">
-			<canvas id="myChart"></canvas>
+		<nav class="navbar">
+			<div class="navbar-brand">PANDO2</div>
+		</nav>
+
+		<div class="container">
+			<div class="filter-section">
+				<div class="filter-row">
+					<span class="filter-label">Filtres</span>
+					<select id="filter-rooms" class="filter-select">
+						<option value="Tout" selected>Tout</option>
+						<option value="Room 8F">Room 8F</option>
+						<option value="Room 8A">Room 8A</option>
+						<option value="Room B2">Room B2</option>
+					</select>
+					<select id="filter-params" class="filter-select">
+						<option value="Tout" selected>Tout</option>
+						<option value="CO2">CO2</option>
+						<option value="TMP">Température</option>
+						<option value="VOCT">VOCT</option>
+						<option value="HUM">Humidité</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="legend">
+				<div class="legend-items">
+					<div class="legend-item">
+						<div class="legend-color room-8f"></div>
+						<span class="legend-text">Room 8F</span>
+					</div>
+					<div class="legend-item">
+						<div class="legend-color room-8a"></div>
+						<span class="legend-text">Room 8A</span>
+					</div>
+					<div class="legend-item">
+						<div class="legend-color room-b2"></div>
+						<span class="legend-text">Room B2</span>
+					</div>
+				</div>
+			</div>
+
+			<div id="content" class="charts-container"></div>
 		</div>
 
 		<script src="script.js"></script>
