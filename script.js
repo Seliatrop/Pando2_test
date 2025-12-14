@@ -1,3 +1,6 @@
+let allData = [];
+let chartsCO2, chartsTMP, chartsVOCT, chartsHUM;
+
 async function loadData() {
 	try {
 		const response = await fetch('/api/data');
@@ -5,7 +8,8 @@ async function loadData() {
 
 		console.log('Données reçues:', result);
 
-		displayData(result.data);
+		allData = result.data;
+		displayData(allData);
 	} catch (error) {
 		console.error('Erreur:', error);
 		document.getElementById('content').innerHTML =
@@ -13,10 +17,10 @@ async function loadData() {
 	}
 }
 
-function displayData(data) {
+function displayData(data, selectedRoom = 'Tout') {
 	const contentDiv = document.getElementById('content');
 
-	let html = '<h2>Pando2</h2>';
+	let html = '';
 
 	const type = {
 		co2: [],
@@ -103,183 +107,110 @@ function displayData(data) {
 		...new Set(type.co2.map((item) => item['@timestamp'])),
 	].sort();
 
-	const datasetsCO2 = [
-		{
-			label: 'Room 8F',
+	const roomsToShow =
+		selectedRoom === 'Tout'
+			? ['Room 8F', 'Room 8A', 'Room B2']
+			: [selectedRoom];
+
+	const datasetsCO2 = roomsToShow.map((room) => {
+		const colors = {
+			'Room 8F': '#3b82f6',
+			'Room 8A': '#eab308',
+			'Room B2': '#10b981',
+		};
+		return {
+			label: room,
 			data: uniqueTimestamps.map((timestamp) => {
-				const item = co2ByRoom['Room 8F'].find(
+				const item = co2ByRoom[room].find(
 					(d) => d['@timestamp'] === timestamp
 				);
 				return item ? parseFloat(item.measure_float) : null;
 			}),
-			borderColor: 'rgba(255, 99, 132, 1)',
+			borderColor: colors[room],
 			fill: false,
 			spanGaps: true,
 			tension: 0.4,
-		},
-		{
-			label: 'Room 8A',
+		};
+	});
+	const datasetsTMP = roomsToShow.map((room) => {
+		const colors = {
+			'Room 8F': '#3b82f6',
+			'Room 8A': '#eab308',
+			'Room B2': '#10b981',
+		};
+		return {
+			label: room,
 			data: uniqueTimestamps.map((timestamp) => {
-				const item = co2ByRoom['Room 8A'].find(
+				const item = tmpByRoom[room].find(
 					(d) => d['@timestamp'] === timestamp
 				);
 				return item ? parseFloat(item.measure_float) : null;
 			}),
-			borderColor: 'rgba(54, 162, 235, 1)',
+			borderColor: colors[room],
 			fill: false,
 			spanGaps: true,
 			tension: 0.4,
-		},
-		{
-			label: 'Room B2',
+		};
+	});
+	const datasetsVOCT = roomsToShow.map((room) => {
+		const colors = {
+			'Room 8F': '#3b82f6',
+			'Room 8A': '#eab308',
+			'Room B2': '#10b981',
+		};
+		return {
+			label: room,
 			data: uniqueTimestamps.map((timestamp) => {
-				const item = co2ByRoom['Room B2'].find(
+				const item = voctByRoom[room].find(
 					(d) => d['@timestamp'] === timestamp
 				);
 				return item ? parseFloat(item.measure_float) : null;
 			}),
-			borderColor: 'rgba(75, 192, 192, 1)',
+			borderColor: colors[room],
 			fill: false,
 			spanGaps: true,
 			tension: 0.4,
-		},
-	];
-	const datasetsTMP = [
-		{
-			label: 'Room 8F',
+		};
+	});
+	const datasetsHUM = roomsToShow.map((room) => {
+		const colors = {
+			'Room 8F': '#3b82f6',
+			'Room 8A': '#eab308',
+			'Room B2': '#10b981',
+		};
+		return {
+			label: room,
 			data: uniqueTimestamps.map((timestamp) => {
-				const item = tmpByRoom['Room 8F'].find(
+				const item = humByRoom[room].find(
 					(d) => d['@timestamp'] === timestamp
 				);
 				return item ? parseFloat(item.measure_float) : null;
 			}),
-			borderColor: 'rgba(255, 159, 64, 1)',
+			borderColor: colors[room],
 			fill: false,
 			spanGaps: true,
 			tension: 0.4,
-		},
-		{
-			label: 'Room 8A',
-			data: uniqueTimestamps.map((timestamp) => {
-				const item = tmpByRoom['Room 8A'].find(
-					(d) => d['@timestamp'] === timestamp
-				);
-				return item ? parseFloat(item.measure_float) : null;
-			}),
-			borderColor: 'rgba(153, 102, 255, 1)',
-			fill: false,
-			spanGaps: true,
-			tension: 0.4,
-		},
-		{
-			label: 'Room B2',
-			data: uniqueTimestamps.map((timestamp) => {
-				const item = tmpByRoom['Room B2'].find(
-					(d) => d['@timestamp'] === timestamp
-				);
-				return item ? parseFloat(item.measure_float) : null;
-			}),
-			borderColor: 'rgba(255, 206, 86, 1)',
-			fill: false,
-			spanGaps: true,
-			tension: 0.4,
-		},
-	];
-	const datasetsVOCT = [
-		{
-			label: 'Room 8F',
-			data: uniqueTimestamps.map((timestamp) => {
-				const item = voctByRoom['Room 8F'].find(
-					(d) => d['@timestamp'] === timestamp
-				);
-				return item ? parseFloat(item.measure_float) : null;
-			}),
-			borderColor: 'rgba(54, 162, 235, 1)',
-			fill: false,
-			spanGaps: true,
-			tension: 0.4,
-		},
-		{
-			label: 'Room 8A',
-			data: uniqueTimestamps.map((timestamp) => {
-				const item = voctByRoom['Room 8A'].find(
-					(d) => d['@timestamp'] === timestamp
-				);
-				return item ? parseFloat(item.measure_float) : null;
-			}),
-			borderColor: 'rgba(255, 99, 132, 1)',
-			fill: false,
-			spanGaps: true,
-			tension: 0.4,
-		},
-		{
-			label: 'Room B2',
-			data: uniqueTimestamps.map((timestamp) => {
-				const item = voctByRoom['Room B2'].find(
-					(d) => d['@timestamp'] === timestamp
-				);
-				return item ? parseFloat(item.measure_float) : null;
-			}),
-			borderColor: 'rgba(75, 192, 192, 1)',
-			fill: false,
-			spanGaps: true,
-			tension: 0.4,
-		},
-	];
-	const datasetsHUM = [
-		{
-			label: 'Room 8F',
-			data: uniqueTimestamps.map((timestamp) => {
-				const item = humByRoom['Room 8F'].find(
-					(d) => d['@timestamp'] === timestamp
-				);
-				return item ? parseFloat(item.measure_float) : null;
-			}),
-			borderColor: 'rgba(255, 206, 86, 1)',
-			fill: false,
-			spanGaps: true,
-			tension: 0.4,
-		},
-		{
-			label: 'Room 8A',
-			data: uniqueTimestamps.map((timestamp) => {
-				const item = humByRoom['Room 8A'].find(
-					(d) => d['@timestamp'] === timestamp
-				);
-				return item ? parseFloat(item.measure_float) : null;
-			}),
-			borderColor: 'rgba(153, 102, 255, 1)',
-			fill: false,
-			spanGaps: true,
-			tension: 0.4,
-		},
-		{
-			label: 'Room B2',
-			data: uniqueTimestamps.map((timestamp) => {
-				const item = humByRoom['Room B2'].find(
-					(d) => d['@timestamp'] === timestamp
-				);
-				return item ? parseFloat(item.measure_float) : null;
-			}),
-			borderColor: 'rgba(54, 162, 235, 1)',
-			fill: false,
-			spanGaps: true,
-			tension: 0.4,
-		},
-	];
+		};
+	});
 
 	html +=
-		'<div style="width: 1000px; height: 500px;"><canvas id="co2Chart"></canvas></div>';
+		'<div class="chart-wrapper" id="co2-wrapper"><canvas id="co2Chart" class="chart-canvas"></canvas></div>';
 	html +=
-		'<div style="width: 1000px; height: 500px;"><canvas id="tmpChart"></canvas></div>';
+		'<div class="chart-wrapper" id="tmp-wrapper"><canvas id="tmpChart" class="chart-canvas"></canvas></div>';
 	html +=
-		'<div style="width: 1000px; height: 500px;"><canvas id="voctChart"></canvas></div>';
+		'<div class="chart-wrapper" id="voct-wrapper"><canvas id="voctChart" class="chart-canvas"></canvas></div>';
 	html +=
-		'<div style="width: 1000px; height: 500px;"><canvas id="humChart"></canvas></div>';
+		'<div class="chart-wrapper" id="hum-wrapper"><canvas id="humChart" class="chart-canvas"></canvas></div>';
 
 	contentDiv.innerHTML = html;
+	contentDiv.classList.add('fade-in');
 
-	new Chart(document.getElementById('co2Chart'), {
+	if (chartsCO2) chartsCO2.destroy();
+	if (chartsTMP) chartsTMP.destroy();
+	if (chartsVOCT) chartsVOCT.destroy();
+	if (chartsHUM) chartsHUM.destroy();
+
+	chartsCO2 = new Chart(document.getElementById('co2Chart'), {
 		type: 'line',
 		data: {
 			labels: uniqueTimestamps.map(xaxis),
@@ -303,11 +234,15 @@ function displayData(data) {
 				},
 				y: {
 					beginAtZero: false,
+					title: {
+						display: true,
+						text: 'ppm',
+					},
 				},
 			},
 		},
 	});
-	new Chart(document.getElementById('tmpChart'), {
+	chartsTMP = new Chart(document.getElementById('tmpChart'), {
 		type: 'line',
 		data: {
 			labels: uniqueTimestamps.map(xaxis),
@@ -331,11 +266,15 @@ function displayData(data) {
 				},
 				y: {
 					beginAtZero: false,
+					title: {
+						display: true,
+						text: '°C',
+					},
 				},
 			},
 		},
 	});
-	new Chart(document.getElementById('voctChart'), {
+	chartsVOCT = new Chart(document.getElementById('voctChart'), {
 		type: 'line',
 		data: {
 			labels: uniqueTimestamps.map(xaxis),
@@ -359,11 +298,15 @@ function displayData(data) {
 				},
 				y: {
 					beginAtZero: false,
+					title: {
+						display: true,
+						text: 'ppb',
+					},
 				},
 			},
 		},
 	});
-	new Chart(document.getElementById('humChart'), {
+	chartsHUM = new Chart(document.getElementById('humChart'), {
 		type: 'line',
 		data: {
 			labels: uniqueTimestamps.map(xaxis),
@@ -387,9 +330,65 @@ function displayData(data) {
 				},
 				y: {
 					beginAtZero: false,
+					title: {
+						display: true,
+						text: '%',
+					},
 				},
 			},
 		},
 	});
+
+	if (!window.filtersInitialized) {
+		initializeFilters();
+		window.filtersInitialized = true;
+	}
 }
+
+function initializeFilters() {
+	const roomFilter = document.getElementById('filter-rooms');
+	const paramFilter = document.getElementById('filter-params');
+
+	paramFilter.addEventListener('change', function () {
+		const selectedParam = this.value;
+
+		if (selectedParam === 'Tout') {
+			document.getElementById('co2-wrapper').classList.remove('hidden');
+			document.getElementById('tmp-wrapper').classList.remove('hidden');
+			document.getElementById('voct-wrapper').classList.remove('hidden');
+			document.getElementById('hum-wrapper').classList.remove('hidden');
+		} else {
+			document.getElementById('co2-wrapper').classList.add('hidden');
+			document.getElementById('tmp-wrapper').classList.add('hidden');
+			document.getElementById('voct-wrapper').classList.add('hidden');
+			document.getElementById('hum-wrapper').classList.add('hidden');
+
+			// Afficher uniquement le graphique sélectionné
+			if (selectedParam === 'CO2') {
+				document
+					.getElementById('co2-wrapper')
+					.classList.remove('hidden');
+			} else if (selectedParam === 'TMP') {
+				document
+					.getElementById('tmp-wrapper')
+					.classList.remove('hidden');
+			} else if (selectedParam === 'VOCT') {
+				document
+					.getElementById('voct-wrapper')
+					.classList.remove('hidden');
+			} else if (selectedParam === 'HUM') {
+				document
+					.getElementById('hum-wrapper')
+					.classList.remove('hidden');
+			}
+		}
+	});
+
+	roomFilter.addEventListener('change', function () {
+		const selectedRoom = this.value;
+		console.log('Filtre salles changé:', selectedRoom);
+		displayData(allData, selectedRoom);
+	});
+}
+
 document.addEventListener('DOMContentLoaded', loadData);
